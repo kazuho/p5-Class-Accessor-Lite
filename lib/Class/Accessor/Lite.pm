@@ -7,7 +7,7 @@ our $VERSION = '0.01';
 sub mk_accessors {
     shift; # usage: Class::Accessor::Lite->mk_accessors(qw(...));
     no strict 'refs';
-    my $pkg = caller(0);
+    my $pkg = caller(1);
     for my $n (@_) {
         *{$pkg . '::' . $n} = __m($n);
     }
