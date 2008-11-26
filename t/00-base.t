@@ -7,10 +7,8 @@ use Test::More tests => 8;
 
 use_ok('Class::Accessor::Lite');
 
-local $@;
-eval {
-    Class::Accessor::Lite->mk_accessors(qw(foo bar));
-};
+Class::Accessor::Lite->mk_accessors(qw(foo bar));
+
 ok(! $@, 'call mk_accessors');
 
 my $k = bless { foo => 1, bar => 2 }, 'K';
