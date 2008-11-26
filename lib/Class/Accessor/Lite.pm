@@ -42,6 +42,8 @@ Class::Accessor::Lite->mk_accessors(qw(foo bar));
 
 This is a minimalitic variant of C<Class::Accessor> and its alikes.
 
+It is intended to be standalone and minimal, so that it can be copy & pasted into individual perl script files.
+
 =head1 AUTHORS
 
 Copyright (C) 2008 Kazuho Oku
