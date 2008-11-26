@@ -44,11 +44,11 @@ This is a minimalitic variant of C<Class::Accessor> and its alikes.
 
 =head1 AUTHORS
 
-Copyright 2008 Kazuho Oku
+Copyright (C) 2008 Kazuho Oku
 
 =head1 LICENSE
 
-This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.  That means either (a) the GNU General Public License or (b) the Artistic License.
+This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself, either Perl version 5.8.6 or, at your option, any later version of Perl 5 you may have available.
 
 =head1 SEE ALSO
 
