@@ -23,3 +23,33 @@ sub __m {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Class::Accessor::Lite - a minimalistic variant of Class::Accessor
+
+=head1 SYNOPSIS
+
+package MyPackage;
+
+use Class::Accessor::Lite;
+
+Class::Accessor::Lite->mk_accessors(qw(foo bar));
+
+=head1 DESCRIPTION
+
+This is a minimalitic variant of C<Class::Accessor> and its alikes.
+
+=head1 AUTHORS
+
+Copyright 2008 Kazuho Oku
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.  That means either (a) the GNU General Public License or (b) the Artistic License.
+
+=head1 SEE ALSO
+
+C<Class::Accessor>
