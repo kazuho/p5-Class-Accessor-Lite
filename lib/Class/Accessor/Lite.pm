@@ -44,9 +44,33 @@ This is a minimalitic variant of C<Class::Accessor> and its alikes.
 
 It is intended to be standalone and minimal, so that it can be copy & pasted into individual perl script files.
 
+=head1 FUNCTIONS
+
+=head2 Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
+
+Creates an accessor in current package under the name specified by the arguments that access the properties (of a hashref) with the same name.
+
+=head1 FAQ
+
+=head2 What happens when passing more than one arguments to the accessor?
+
+When the accessor built by Class::Accessor::Lite is given more than one arguments, a reference to the arguments will be saved as an arrayref.  This behaviour might not be necessary but is implemented as is to maintain compatibility with L<Class::Accessor::Fast>.
+
+    my @data = (1, 2, 3);
+    $obj->someproperty(@data);
+
+    $obj->someproperty->[2]++; # $data[3] is incremented
+
+In general, you should pass an arrayref to set an arrayref to a property.
+
+    my @data = (1, 2, 3);
+    $obj->someproperty([ @data ]); # save a copy using arrayref
+
+    $obj->someproper->[2]++; # @data is not modified
+
 =head1 AUTHORS
 
-Copyright (C) 2008 Kazuho Oku
+Copyright (C) 2008 - 2010 Kazuho Oku
 
 =head1 LICENSE
 
