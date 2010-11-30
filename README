@@ -1,27 +1,54 @@
-Class::Accessor::Lite
-===========================
+NAME
+    Class::Accessor::Lite - a minimalistic variant of Class::Accessor
 
-Class::Accessor::Lite is a minimalitsic variant of Class::Accessor.
+SYNOPSIS
+    package MyPackage;
 
-INSTALLATION
+    use Class::Accessor::Lite;
 
-To install this module type the following:
+    Class::Accessor::Lite->mk_accessors(qw(foo bar));
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+DESCRIPTION
+    This is a minimalitic variant of "Class::Accessor" and its alikes.
 
-DEPENDENCIES
+    It is intended to be standalone and minimal, so that it can be copy &
+    pasted into individual perl script files.
 
-See Makefile.PL.
+FUNCTIONS
+  Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
+    Creates an accessor in current package under the name specified by the
+    arguments that access the properties (of a hashref) with the same name.
 
-COPYRIGHT AND LICENCE
+FAQ
+  What happens when passing more than one arguments to the accessor?
+    When the accessor built by Class::Accessor::Lite is given more than one
+    arguments, a reference to the arguments will be saved as an arrayref.
+    This behaviour might not be necessary but is implemented as is to
+    maintain compatibility with Class::Accessor::Fast.
 
-Put the correct copyright and licence information here.
+        my @data = (1, 2, 3);
+        $obj->someproperty(@data);
 
-Copyright (C) 2008 Kazuho Oku.
+        $obj->someproperty->[2]++; # $data[3] is incremented
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.6 or,
-at your option, any later version of Perl 5 you may have available.
+    In general, you should pass an arrayref to set an arrayref to a
+    property.
+
+        my @data = (1, 2, 3);
+        $obj->someproperty([ @data ]); # save a copy using arrayref
+
+        $obj->someproper->[2]++; # @data is not modified
+
+SEE ALSO
+    Class::Accessor
+
+    Class::Accessor::Lite
+
+AUTHORS
+    Copyright (C) 2008 - 2010 Kazuho Oku
+
+LICENSE
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself, either Perl version 5.8.6 or, at
+    your option, any later version of Perl 5 you may have available.
+
