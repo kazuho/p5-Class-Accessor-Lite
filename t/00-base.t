@@ -1,7 +1,7 @@
+package K;
+
 use strict;
 use warnings;
-
-package K;
 
 use Test::More tests => 8;
 

@@ -4,13 +4,42 @@ use strict;
 
 our $VERSION = '0.02';
 
-sub mk_accessors {
-    shift; # usage: Class::Accessor::Lite->mk_accessors(qw(...));
-    no strict 'refs';
+sub mk_new_and_accessors {
+    (undef, my @properties) = @_;
     my $pkg = caller(0);
+    _mk_new($pkg, @properties);
+    _mk_accessors($pkg, @properties);
+}
+
+sub mk_accessors {
+    (undef, my @properties) = @_;
+    my $pkg = caller(0);
+    _mk_accessors($pkg, @properties);
+}
+
+sub _mk_new {
+    my $pkg = shift;
+    no strict 'refs';
+    *{$pkg . '::new'} = __m_new(@_);
+}
+
+sub _mk_accessors {
+    my $pkg = shift;
+    no strict 'refs';
     for my $n (@_) {
         *{$pkg . '::' . $n} = __m($n);
     }
+}
+
+sub __m_new {
+    my @props = @_;
+    sub {
+        my $klass = shift;
+        bless {
+            (map { $_ => undef } @props),
+            (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
+        }, $klass;
+    };
 }
 
 sub __m {
