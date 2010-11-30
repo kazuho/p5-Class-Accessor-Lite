@@ -61,11 +61,15 @@ Class::Accessor::Lite - a minimalistic variant of Class::Accessor
 
 =head1 SYNOPSIS
 
-package MyPackage;
+    package MyPackage;
 
-use Class::Accessor::Lite;
+    use Class::Accessor::Lite;
 
-Class::Accessor::Lite->mk_accessors(qw(foo bar));
+    # make accessors: "foo" and "bar"
+    Class::Accessor::Lite->mk_accessors(qw(foo bar));
+
+    # make accessors and the constructor
+    Class::Accessor::Lite->mk_new_and_accessors(qw(foo bar));
 
 =head1 DESCRIPTION
 
@@ -78,6 +82,10 @@ It is intended to be standalone and minimal, so that it can be copy & pasted int
 =head2 Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
 
 Creates an accessor in current package under the name specified by the arguments that access the properties (of a hashref) with the same name.
+
+=head2 Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
+
+Creates the C<new> function in addition to the accessors.  The function will accept a hash or a hashref as the initial properties of the object.  The default values of the properties are undef.
 
 =head1 FAQ
 
