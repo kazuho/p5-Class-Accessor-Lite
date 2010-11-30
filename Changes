@@ -1,5 +1,9 @@
 Revision history for Perl extension Filter::SQL.
 
+0.03
+	- add mk_new_and_accessors
+	- more documentation
+
 0.02  Wed Nov 26 18:00:00 2008
 	- used to create accessor for different package in caller stack
 

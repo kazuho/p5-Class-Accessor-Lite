@@ -2,7 +2,7 @@ package Class::Accessor::Lite;
 
 use strict;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
