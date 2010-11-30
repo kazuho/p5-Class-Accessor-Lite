@@ -68,6 +68,12 @@ In general, you should pass an arrayref to set an arrayref to a property.
 
     $obj->someproper->[2]++; # @data is not modified
 
+=head1 SEE ALSO
+
+L<Class::Accessor>
+
+L<Class::Accessor::Lite>
+
 =head1 AUTHORS
 
 Copyright (C) 2008 - 2010 Kazuho Oku
@@ -76,6 +82,5 @@ Copyright (C) 2008 - 2010 Kazuho Oku
 
 This library is free software; you can redistribute it and/or modify it under the same terms as Perl itself, either Perl version 5.8.6 or, at your option, any later version of Perl 5 you may have available.
 
-=head1 SEE ALSO
+=cut
 
-C<Class::Accessor>
