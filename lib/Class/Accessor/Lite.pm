@@ -4,6 +4,8 @@ use strict;
 
 our $VERSION = '0.02';
 
+use Carp ();
+
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
@@ -17,6 +19,18 @@ sub mk_accessors {
     _mk_accessors($pkg, @properties);
 }
 
+sub mk_ro_accessors {
+    (undef, my @properties) = @_;
+    my $pkg = caller(0);
+    _mk_ro_accessors($pkg, @properties);
+}
+
+sub mk_wo_accessors {
+    (undef, my @properties) = @_;
+    my $pkg = caller(0);
+    _mk_wo_accessors($pkg, @properties);
+}
+
 sub _mk_new {
     my $pkg = shift;
     no strict 'refs';
@@ -28,6 +42,22 @@ sub _mk_accessors {
     no strict 'refs';
     for my $n (@_) {
         *{$pkg . '::' . $n} = __m($n);
+    }
+}
+
+sub _mk_ro_accessors {
+    my $pkg = shift;
+    no strict 'refs';
+    for my $n (@_) {
+        *{$pkg . '::' . $n} = __m_ro($pkg, $n);
+    }
+}
+
+sub _mk_wo_accessors {
+    my $pkg = shift;
+    no strict 'refs';
+    for my $n (@_) {
+        *{$pkg . '::' . $n} = __m_wo($pkg, $n);
     }
 }
 
@@ -51,6 +81,32 @@ sub __m {
     };
 }
 
+sub __m_ro {
+    my ($pkg, $n) = @_;
+    sub {
+        if (@_ == 1) {
+            return $_[0]->{$n} if @_ == 1;
+        } else {
+            my $caller = caller(0);
+            Carp::croak("'$caller' cannot access the value of '$n' on objects of class '$pkg'");
+        }
+    };
+}
+
+sub __m_wo {
+    my ($pkg, $n) = @_;
+    sub {
+        if (@_ == 1) {
+            my $caller = caller(0);
+            Carp::croak( "'$caller' cannot alter the value of '$n' on objects of class '$pkg'")
+        } else {
+            return $_[0]->{$n} = $_[1] if @_ == 2;
+            shift->{$n} = \@_;
+        }
+    };
+}
+
+
 1;
 
 __END__
@@ -68,6 +124,12 @@ Class::Accessor::Lite - a minimalistic variant of Class::Accessor
     # make accessors: "foo" and "bar"
     Class::Accessor::Lite->mk_accessors(qw(foo bar));
 
+    # make read only accessors: "foo" and "bar"
+    Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
+
+    # make write only accessors: "foo" and "bar"
+    Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
+
     # make accessors and the constructor
     Class::Accessor::Lite->mk_new_and_accessors(qw(foo bar));
 
@@ -82,6 +144,18 @@ It is intended to be standalone and minimal, so that it can be copy & pasted int
 =head2 Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
 
 Creates an accessor in current package under the name specified by the arguments that access the properties (of a hashref) with the same name.
+
+=head2 Class::Accessor::Lite->mk_ro_accessors(@name_of_the_properties)
+
+Same as mk_accessors() except it will generate read‐only accessors (ie
+true accessors).  If you attempt to set a value with these accessors it
+will throw an exception.
+
+=head2 Class::Accessor::Lite->mk_wo_accessors(@name_of_the_properties)
+
+Same as mk_accessors() except it will generate write‐only accessors
+(ie. mutators).  If you attempt to read a value with these accessors it
+will throw an exception.
 
 =head2 Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
 
