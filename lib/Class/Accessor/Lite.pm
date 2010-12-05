@@ -147,15 +147,11 @@ Creates an accessor in current package under the name specified by the arguments
 
 =head2 Class::Accessor::Lite->mk_ro_accessors(@name_of_the_properties)
 
-Same as mk_accessors() except it will generate read‐only accessors (ie
-true accessors).  If you attempt to set a value with these accessors it
-will throw an exception.
+Same as mk_accessors() except it will generate read-only accessors (i.e. true accessors).  If you attempt to set a value with these accessors it will throw an exception.
 
 =head2 Class::Accessor::Lite->mk_wo_accessors(@name_of_the_properties)
 
-Same as mk_accessors() except it will generate write‐only accessors
-(ie. mutators).  If you attempt to read a value with these accessors it
-will throw an exception.
+Same as mk_accessors() except it will generate write-only accessors (i.e. mutators).  If you attempt to read a value with these accessors it will throw an exception.
 
 =head2 Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
 
