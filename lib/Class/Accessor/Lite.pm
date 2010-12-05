@@ -19,7 +19,7 @@ sub import {
     _mk_new(
         $pkg,
         map { $args{$_} ? @{$args{$_}} : () } qw(rw ro wo),
-    );
+    ) if $args{new};
     1;
 }
 
