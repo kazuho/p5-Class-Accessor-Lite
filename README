@@ -9,6 +9,12 @@ SYNOPSIS
         # make accessors: "foo" and "bar"
         Class::Accessor::Lite->mk_accessors(qw(foo bar));
 
+        # make read only accessors: "foo" and "bar"
+        Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
+
+        # make write only accessors: "foo" and "bar"
+        Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
+
         # make accessors and the constructor
         Class::Accessor::Lite->mk_new_and_accessors(qw(foo bar));
 
@@ -22,6 +28,16 @@ FUNCTIONS
   Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
     Creates an accessor in current package under the name specified by the
     arguments that access the properties (of a hashref) with the same name.
+
+  Class::Accessor::Lite->mk_ro_accessors(@name_of_the_properties)
+    Same as mk_accessors() except it will generate read-only accessors (i.e.
+    true accessors). If you attempt to set a value with these accessors it
+    will throw an exception.
+
+  Class::Accessor::Lite->mk_wo_accessors(@name_of_the_properties)
+    Same as mk_accessors() except it will generate write-only accessors
+    (i.e. mutators). If you attempt to read a value with these accessors it
+    will throw an exception.
 
   Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
     Creates the "new" function in addition to the accessors. The function

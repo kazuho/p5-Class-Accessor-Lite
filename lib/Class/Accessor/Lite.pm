@@ -6,11 +6,34 @@ our $VERSION = '0.02';
 
 use Carp ();
 
+sub import {
+    shift;
+    my %args = @_;
+    my $pkg = caller(0);
+    _mk_accessors($pkg, @{$args{rw}})
+        if $args{rw};
+    _mk_ro_accessors($pkg, @{$args{ro}})
+        if $args{ro};
+    _mk_wo_accessors($pkg, @{$args{wo}})
+        if $args{rw};
+    _mk_new(
+        $pkg,
+        map { $args{$_} ? @{$args{$_}} : () } qw(rw ro wo),
+    );
+    1;
+}
+
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
     _mk_new($pkg, @properties);
     _mk_accessors($pkg, @properties);
+}
+
+sub mk_new {
+    (undef, my @properties) = @_;
+    my $pkg = caller(0);
+    _mk_new($pkg, @properties);
 }
 
 sub mk_accessors {
@@ -119,27 +142,20 @@ Class::Accessor::Lite - a minimalistic variant of Class::Accessor
 
     package MyPackage;
 
-    use Class::Accessor::Lite;
-
-    # make accessors: "foo" and "bar"
-    Class::Accessor::Lite->mk_accessors(qw(foo bar));
-
-    # make read only accessors: "foo" and "bar"
-    Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
-
-    # make write only accessors: "foo" and "bar"
-    Class::Accessor::Lite->mk_ro_accessors(qw(foo bar));
-
-    # make accessors and the constructor
-    Class::Accessor::Lite->mk_new_and_accessors(qw(foo bar));
+    use Class::Accessor::Lite (
+        new => 1,
+        rw  => [ qw(foo bar) ],
+        ro  => [ qw(baz) ],
+        wo  => [ qw(hoge) ],
+    );
 
 =head1 DESCRIPTION
 
-This is a minimalitic variant of C<Class::Accessor> and its alikes.
-
-It is intended to be standalone and minimal, so that it can be copy & pasted into individual perl script files.
+The module is a variant of C<Class::Accessor>.  It is fast and requires less typing, has no dependencies to other modules, and does not mess up the @ISA.
 
 =head1 FUNCTIONS
+
+As of version 0.04 the properties can be specified as the arguments to the C<use> statement (as can be seen in the SYNOPSIS) which is now the recommended way of using the module, but for compatibility the following functions are provided as well.
 
 =head2 Class::Accessor::Lite->mk_accessors(@name_of_the_properties)
 
@@ -153,9 +169,13 @@ Same as mk_accessors() except it will generate read-only accessors (i.e. true ac
 
 Same as mk_accessors() except it will generate write-only accessors (i.e. mutators).  If you attempt to read a value with these accessors it will throw an exception.
 
+=head2 Class::Accessor::Lite->mk_new(@name_of_the_properties)
+
+Creates the C<new> function that accepts a hash or a hashref as the initial properties of the object.  Unless set through the arguments to the C<new> function, the properties specified by the call to C<mk_new> defaults to undef.
+
 =head2 Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
 
-Creates the C<new> function in addition to the accessors.  The function will accept a hash or a hashref as the initial properties of the object.  The default values of the properties are undef.
+DEPRECATED.  Use the new "use Class::Accessor::Lite (...)" style.
 
 =head1 FAQ
 
