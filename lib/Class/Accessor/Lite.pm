@@ -26,14 +26,13 @@ sub import {
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
-    _mk_new($pkg, @properties);
+    _mk_new($pkg);
     _mk_accessors($pkg, @properties);
 }
 
 sub mk_new {
-    (undef, my @properties) = @_;
     my $pkg = caller(0);
-    _mk_new($pkg, @properties);
+    _mk_new($pkg);
 }
 
 sub mk_accessors {
@@ -57,7 +56,7 @@ sub mk_wo_accessors {
 sub _mk_new {
     my $pkg = shift;
     no strict 'refs';
-    *{$pkg . '::new'} = __m_new(@_);
+    *{$pkg . '::new'} = __m_new($pkg);
 }
 
 sub _mk_accessors {
@@ -85,11 +84,11 @@ sub _mk_wo_accessors {
 }
 
 sub __m_new {
-    my @props = @_;
-    sub {
+    my $pkg = shift;
+    no strict 'refs';
+    return sub {
         my $klass = shift;
         bless {
-            (map { $_ => undef } @props),
             (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
         }, $klass;
     };
@@ -195,15 +194,19 @@ Same as mk_accessors() except it will generate read-only accessors (i.e. true ac
 
 Same as mk_accessors() except it will generate write-only accessors (i.e. mutators).  If you attempt to read a value with these accessors it will throw an exception.
 
-=head2 Class::Accessor::Lite->mk_new(@name_of_the_properties)
+=head2 Class::Accessor::Lite->mk_new()
 
-Creates the C<new> function that accepts a hash or a hashref as the initial properties of the object.  Unless set through the arguments to the C<new> function, the properties specified by the call to C<mk_new> defaults to undef.
+Creates the C<new> function that accepts a hash or a hashref as the initial properties of the object.
 
 =head2 Class::Accessor::Lite->mk_new_and_accessors(@name_of_the_properties)
 
 DEPRECATED.  Use the new "use Class::Accessor::Lite (...)" style.
 
 =head1 FAQ
+
+=head2 Can I use C<Class::Accessor::Lite> in an inherited module?
+
+Yes in most cases, when the class object in the super class is implemeted using a hashref.  However you _should_ _not_ create the constructor for the inherited class by calling C<Class::Accessor::Lite->new()> or by C<use Class::Accessor::Lite (new => 1).  The only other thing that C<Class::Accessor::Lite> does is to set up the accessor functions for given property names through a blessed hashref.
 
 =head2 What happens when passing more than one arguments to the accessor?
 
