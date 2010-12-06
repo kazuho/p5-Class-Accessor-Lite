@@ -1,4 +1,7 @@
-Revision history for Perl extension Filter::SQL.
+Revision history for Perl extension Class::Accessor::Lite.
+
+0.05
+	- improve usage error checking: assert that the accessor lists passed through the "import" function are arrayrefs
 
 0.04
 	- add read-only and write-only accessor constructors (tokuhirom)
