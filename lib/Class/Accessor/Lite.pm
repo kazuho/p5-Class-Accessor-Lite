@@ -153,6 +153,32 @@ Class::Accessor::Lite - a minimalistic variant of Class::Accessor
 
 The module is a variant of C<Class::Accessor>.  It is fast and requires less typing, has no dependencies to other modules, and does not mess up the @ISA.
 
+=head1 THE USE STATEMENT
+
+The use statement (i.e. the C<import> function) of the module takes a single hash as an argument that specifies the types and the names of the properties.  Recognises the following keys.
+
+=over 4
+
+=item new => $true_or_false
+
+the default constructor is created if the value evaluates to true, otherwise nothing is done (the default behaviour)
+
+=item rw => \@name_of_the_properties
+
+creates a read / write accessor for the name of the properties passed through as an arrayref
+
+=item ro => \@name_of_the_properties
+
+creates a write-only accessor for the name of the properties passed through as an arrayref
+
+=item rw => \@name_of_the_properties
+
+creates a read-only accessor for the name of the properties passed through as an arrayref
+
+=back
+
+For more detailed explanation read the following section describing the behaviour of each function that actually creates the accessors.
+
 =head1 FUNCTIONS
 
 As of version 0.04 the properties can be specified as the arguments to the C<use> statement (as can be seen in the SYNOPSIS) which is now the recommended way of using the module, but for compatibility the following functions are provided as well.
