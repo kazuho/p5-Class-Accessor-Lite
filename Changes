@@ -1,5 +1,9 @@
 Revision history for Perl extension Filter::SQL.
 
+0.04
+	- add read-only and write-only accessor constructors (tokuhirom)
+	- the new "use Class::Accessor::Lite (rw => ...)" style
+
 0.03
 	- add mk_new_and_accessors
 	- more documentation

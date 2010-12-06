@@ -68,6 +68,15 @@ FUNCTIONS
     DEPRECATED. Use the new "use Class::Accessor::Lite (...)" style.
 
 FAQ
+  Can I use "Class::Accessor::Lite" in an inherited module?
+    Yes in most cases, when the class object in the super class is
+    implemeted using a hashref. However you _should_ _not_ create the
+    constructor for the inherited class by calling
+    "Class::Accessor::Lite-"new()> or by "use Class::Accessor::Lite (new ="
+    1). The only other thing that "Class::Accessor::Lite" does is to set up
+    the accessor functions for given property names through a blessed
+    hashref.
+
   What happens when passing more than one arguments to the accessor?
     When the accessor built by Class::Accessor::Lite is given more than one
     arguments, a reference to the arguments will be saved as an arrayref.
