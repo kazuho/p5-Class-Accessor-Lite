@@ -16,10 +16,8 @@ sub import {
         if $args{ro};
     _mk_wo_accessors($pkg, @{$args{wo}})
         if $args{rw};
-    _mk_new(
-        $pkg,
-        map { $args{$_} ? @{$args{$_}} : () } qw(rw ro wo),
-    ) if $args{new};
+    _mk_new($pkg)
+        if $args{new};
     1;
 }
 
