@@ -10,12 +10,18 @@ sub import {
     shift;
     my %args = @_;
     my $pkg = caller(0);
-    _mk_accessors($pkg, @{$args{rw}})
-        if $args{rw};
-    _mk_ro_accessors($pkg, @{$args{ro}})
-        if $args{ro};
-    _mk_wo_accessors($pkg, @{$args{wo}})
-        if $args{rw};
+    my %key_ctor = (
+        rw => \&_mk_accessors,
+        ro => \&_mk_ro_accessors,
+        wo => \&_mk_wo_accessors,
+    );
+    for my $key (sort keys %key_ctor) {
+        if (defined $args{$key}) {
+            Carp::croak "value of the '$key' parameter should be an arrayref"
+                unless ref($args{$key}) eq 'ARRAY';
+            $key_ctor{$key}->($pkg, @{$args{$key}});
+        }
+    }
     _mk_new($pkg)
         if $args{new};
     1;
