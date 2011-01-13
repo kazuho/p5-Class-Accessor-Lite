@@ -42,7 +42,7 @@ sub import {
         _mk_new($pkg, \%defvals, \%defgens);
     }
     if ($make_mixin_initer) {
-        _mk_mixin_initer($pkg, \%defvals, \%defgens);
+        _mk_mixin_init($pkg, \%defvals, \%defgens);
     }
     1;
 }
@@ -75,12 +75,6 @@ sub mk_wo_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
     _mk_wo_accessors($pkg, @properties);
-}
-
-sub init_mixin {
-    my ($pkg, $obj) = @_;
-    $_->($obj)
-        for _get_mixin_initers($pkg);
 }
 
 sub _mk_new {
@@ -139,9 +133,8 @@ sub _get_mixin_initers {
     @setups;
 }
 
-sub _mk_mixin_initer {
+sub _mk_mixin_init {
     my ($pkg, $defvals, $defgens) = @_;
-    no strict 'refs';
     $mixin_initers{$pkg} = sub {
         my $self = shift;
         for my $name (keys %$defvals) {
@@ -152,6 +145,12 @@ sub _mk_mixin_initer {
             next if exists $self->{$name};
             $self->{$name} = $defgens->{$name}->();
         }
+    };
+    no strict 'refs';
+    *{$pkg . '::mixin_init'} = sub {
+        my $obj = shift;
+        $_->($obj)
+            for _get_mixin_initers($pkg);
     };
 }
 
