@@ -15,24 +15,27 @@ sub import {
         ro => \&_mk_ro_accessors,
         wo => \&_mk_wo_accessors,
     );
-    my %defaults;
+    my (%defvals, %defgens);
     for my $key (sort keys %key_ctor) {
         if (defined $args{$key}) {
             my $properties = $args{$key};
             Carp::croak "value of the '$key' parameter should be an arrayref or a hashref"
                 unless ref($properties) eq 'ARRAY' || ref($properties) eq 'HASH';
             if (ref $properties eq 'HASH') {
-                %defaults = (
-                    %defaults,
-                    %$properties,
-                );
                 $key_ctor{$key}->($pkg, keys %$properties);
+                for my $name (keys %$properties) {
+                    if (ref($properties->{$name}) eq 'CODE') {
+                        $defgens{$name} = $properties->{$name};
+                    } else {
+                        $defvals{$name} = $properties->{$name};
+                    }
+                }
             } else {
                 $key_ctor{$key}->($pkg, @{$properties});
             }
         }
     }
-    _mk_new($pkg, \%defaults)
+    _mk_new($pkg, \%defvals, \%defgens)
         if $args{new};
     1;
 }
@@ -40,13 +43,13 @@ sub import {
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
-    _mk_new($pkg, {});
+    _mk_new($pkg, {}, {});
     _mk_accessors($pkg, @properties);
 }
 
 sub mk_new {
     my $pkg = caller(0);
-    _mk_new($pkg, {});
+    _mk_new($pkg, {}, {});
 }
 
 sub mk_accessors {
@@ -68,7 +71,7 @@ sub mk_wo_accessors {
 }
 
 sub _mk_new {
-    my ($pkg, $defaults) = @_;
+    my ($pkg, $defvals, $defgens) = @_;
     no strict 'refs';
     *{$pkg . '::new'} = sub {
         my $nf;
@@ -82,10 +85,8 @@ sub _mk_new {
                 my $klass = shift;
                 $super_new->(
                     $klass,
-                    (map { do {
-                        my $v = $defaults->{$_};
-                        +($_ => (ref($v) eq 'CODE' ? $v->() : $v)),
-                    } } keys %$defaults),
+                    %$defvals,
+                    (map { +($_ => $defgens->{$_}->()) } keys %$defgens),
                     (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
                 );
             };
@@ -93,10 +94,8 @@ sub _mk_new {
             $nf = sub {
                 my $klass = shift;
                 bless {
-                    (map { do {
-                        my $v = $defaults->{$_};
-                        +($_ => (ref($v) eq 'CODE' ? $v->() : $v)),
-                    } } keys %$defaults),
+                    %$defvals,
+                    (map { +($_ => $defgens->{$_}->()) } keys %$defgens),
                     (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
                 }, $klass;
             };
