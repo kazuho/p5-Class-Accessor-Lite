@@ -6,6 +6,8 @@ our $VERSION = '0.05';
 
 use Carp ();
 
+my %setup_funcs;
+
 sub import {
     shift;
     my %args = @_;
@@ -15,7 +17,7 @@ sub import {
         ro => \&_mk_ro_accessors,
         wo => \&_mk_wo_accessors,
     );
-    my (%defvals, %defgens);
+    my (%defvals, %defgens, $create_setup);
     for my $key (sort keys %key_ctor) {
         if (defined $args{$key}) {
             my $properties = $args{$key};
@@ -29,14 +31,19 @@ sub import {
                     } else {
                         $defvals{$name} = $properties->{$name};
                     }
+                    $create_setup = 1;
                 }
             } else {
                 $key_ctor{$key}->($pkg, @{$properties});
             }
         }
     }
-    _mk_new($pkg, \%defvals, \%defgens)
-        if $args{new};
+    if ($args{new}) {
+        _mk_new($pkg, \%defvals, \%defgens);
+    }
+    if ($create_setup) {
+        _mk_setup($pkg, \%defvals, \%defgens);
+    }
     1;
 }
 
@@ -80,29 +87,65 @@ sub _mk_new {
             $super_new = $super->can('new')
                 and last;
         }
+        my @setups = _get_setups($pkg);
         if ($super_new) {
             $nf = sub {
                 my $klass = shift;
-                $super_new->(
+                my $obj = $super_new->(
                     $klass,
                     %$defvals,
                     (map { +($_ => $defgens->{$_}->()) } keys %$defgens),
                     (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
                 );
+                $_->($obj)
+                    for @setups;
+                $obj;
             };
         } else {
             $nf = sub {
                 my $klass = shift;
-                bless {
+                my $obj = bless {
                     %$defvals,
                     (map { +($_ => $defgens->{$_}->()) } keys %$defgens),
                     (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
                 }, $klass;
+                $_->($obj)
+                    for @setups;
+                $obj;
             };
         }
         no warnings 'redefine';
         *{$pkg . '::new'} = $nf;
         $nf->(@_);
+    };
+}
+
+sub _get_setups {
+    my $pkg = shift;
+    my @setups;
+    no strict 'refs';
+    for my $super (@{"$pkg\::ISA"}) {
+        unshift @setups, _get_setups($super);
+    }
+    if (my $f = $setup_funcs{$pkg}) {
+        unshift @setups, $f;
+    }
+    @setups;
+}
+
+sub _mk_setup {
+    my ($pkg, $defvals, $defgens) = @_;
+    no strict 'refs';
+    $setup_funcs{$pkg} = sub {
+        my $self = shift;
+        for my $name (keys %$defvals) {
+            next if exists $self->{$name};
+            $self->{$name} = $defvals->{$name};
+        }
+        for my $name (keys %$defgens) {
+            next if exists $self->{$name};
+            $self->{$name} = $defgens->{$name}->();
+        }
     };
 }
 
