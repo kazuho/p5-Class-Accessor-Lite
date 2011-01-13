@@ -6,7 +6,7 @@ our $VERSION = '0.05';
 
 use Carp ();
 
-my %setup_funcs;
+my %mixin_initers;
 
 sub import {
     shift;
@@ -17,7 +17,7 @@ sub import {
         ro => \&_mk_ro_accessors,
         wo => \&_mk_wo_accessors,
     );
-    my (%defvals, %defgens, $create_setup);
+    my (%defvals, %defgens, $make_mixin_initer);
     for my $key (sort keys %key_ctor) {
         if (defined $args{$key}) {
             my $properties = $args{$key};
@@ -31,7 +31,7 @@ sub import {
                     } else {
                         $defvals{$name} = $properties->{$name};
                     }
-                    $create_setup = 1;
+                    $make_mixin_initer = 1;
                 }
             } else {
                 $key_ctor{$key}->($pkg, @{$properties});
@@ -41,8 +41,8 @@ sub import {
     if ($args{new}) {
         _mk_new($pkg, \%defvals, \%defgens);
     }
-    if ($create_setup) {
-        _mk_setup($pkg, \%defvals, \%defgens);
+    if ($make_mixin_initer) {
+        _mk_mixin_initer($pkg, \%defvals, \%defgens);
     }
     1;
 }
@@ -77,6 +77,12 @@ sub mk_wo_accessors {
     _mk_wo_accessors($pkg, @properties);
 }
 
+sub init_mixin {
+    my ($pkg, $obj) = @_;
+    $_->($obj)
+        for _get_mixin_initers($pkg);
+}
+
 sub _mk_new {
     my ($pkg, $defvals, $defgens) = @_;
     no strict 'refs';
@@ -87,7 +93,7 @@ sub _mk_new {
             $super_new = $super->can('new')
                 and last;
         }
-        my @setups = _get_setups($pkg);
+        my @setups = _get_mixin_initers($pkg);
         if ($super_new) {
             $nf = sub {
                 my $klass = shift;
@@ -120,23 +126,23 @@ sub _mk_new {
     };
 }
 
-sub _get_setups {
+sub _get_mixin_initers {
     my $pkg = shift;
     my @setups;
     no strict 'refs';
     for my $super (@{"$pkg\::ISA"}) {
-        unshift @setups, _get_setups($super);
+        unshift @setups, _get_mixin_initers($super);
     }
-    if (my $f = $setup_funcs{$pkg}) {
+    if (my $f = $mixin_initers{$pkg}) {
         unshift @setups, $f;
     }
     @setups;
 }
 
-sub _mk_setup {
+sub _mk_mixin_initer {
     my ($pkg, $defvals, $defgens) = @_;
     no strict 'refs';
-    $setup_funcs{$pkg} = sub {
+    $mixin_initers{$pkg} = sub {
         my $self = shift;
         for my $name (keys %$defvals) {
             next if exists $self->{$name};
