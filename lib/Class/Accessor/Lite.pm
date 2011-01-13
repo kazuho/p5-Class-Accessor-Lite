@@ -15,14 +15,24 @@ sub import {
         ro => \&_mk_ro_accessors,
         wo => \&_mk_wo_accessors,
     );
+    my %defaults;
     for my $key (sort keys %key_ctor) {
         if (defined $args{$key}) {
-            Carp::croak "value of the '$key' parameter should be an arrayref"
-                unless ref($args{$key}) eq 'ARRAY';
-            $key_ctor{$key}->($pkg, @{$args{$key}});
+            my $properties = $args{$key};
+            Carp::croak "value of the '$key' parameter should be an arrayref or a hashref"
+                unless ref($properties) eq 'ARRAY' || ref($properties) eq 'HASH';
+            if (ref $properties eq 'HASH') {
+                %defaults = (
+                    %defaults,
+                    %$properties,
+                );
+                $key_ctor{$key}->($pkg, keys %$properties);
+            } else {
+                $key_ctor{$key}->($pkg, @{$properties});
+            }
         }
     }
-    _mk_new($pkg)
+    _mk_new($pkg, \%defaults)
         if $args{new};
     1;
 }
@@ -30,13 +40,13 @@ sub import {
 sub mk_new_and_accessors {
     (undef, my @properties) = @_;
     my $pkg = caller(0);
-    _mk_new($pkg);
+    _mk_new($pkg, {});
     _mk_accessors($pkg, @properties);
 }
 
 sub mk_new {
     my $pkg = caller(0);
-    _mk_new($pkg);
+    _mk_new($pkg, {});
 }
 
 sub mk_accessors {
@@ -58,9 +68,43 @@ sub mk_wo_accessors {
 }
 
 sub _mk_new {
-    my $pkg = shift;
+    my ($pkg, $defaults) = @_;
     no strict 'refs';
-    *{$pkg . '::new'} = __m_new($pkg);
+    *{$pkg . '::new'} = sub {
+        my $nf;
+        my $super_new;
+        for my $super (@{"$pkg\::ISA"}) {
+            $super_new = $super->can('new')
+                and last;
+        }
+        if ($super_new) {
+            $nf = sub {
+                my $klass = shift;
+                $super_new->(
+                    $klass,
+                    (map { do {
+                        my $v = $defaults->{$_};
+                        +($_ => (ref($v) eq 'CODE' ? $v->() : $v)),
+                    } } keys %$defaults),
+                    (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
+                );
+            };
+        } else {
+            $nf = sub {
+                my $klass = shift;
+                bless {
+                    (map { do {
+                        my $v = $defaults->{$_};
+                        +($_ => (ref($v) eq 'CODE' ? $v->() : $v)),
+                    } } keys %$defaults),
+                    (@_ == 1 && ref($_[0]) eq 'HASH' ? %{$_[0]} : @_),
+                }, $klass;
+            };
+        }
+        no warnings 'redefine';
+        *{$pkg . '::new'} = $nf;
+        $nf->(@_);
+    };
 }
 
 sub _mk_accessors {

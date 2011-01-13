@@ -9,17 +9,19 @@ use Class::Accessor::Lite (
     wo  => [ qw(yappo) ],
 );
 
-use Test::More tests => 6;
+use Test::More tests => 12;
 
-my $l = L->new(
-    bar       => 1,
-    tokuhirom => 2,
-);
-is ref($l), 'L';
-ok ! defined $l->foo;
-is $l->bar, 1;
-is $l->tokuhirom, 2;
-$l->bar(3);
-is $l->bar, 3;
-$l->yappo(4);
-is $l->{yappo}, 4;
+for (1..2) { # L::new is replaced at the first invocation
+    my $l = L->new(
+        bar       => 1,
+        tokuhirom => 2,
+    );
+    is ref($l), 'L';
+    ok ! defined $l->foo;
+    is $l->bar, 1;
+    is $l->tokuhirom, 2;
+    $l->bar(3);
+    is $l->bar, 3;
+    $l->yappo(4);
+    is $l->{yappo}, 4;
+}
