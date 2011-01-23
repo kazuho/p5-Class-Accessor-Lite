@@ -261,11 +261,11 @@ the default constructor is created if the value evaluates to true, otherwise not
 
 creates a read / write accessor for the name of the properties passed through as an arrayref
 
-=item ro => \@name_of_the_properties
+=item wo => \@name_of_the_properties
 
 creates a write-only accessor for the name of the properties passed through as an arrayref
 
-=item rw => \@name_of_the_properties
+=item ro => \@name_of_the_properties
 
 creates a read-only accessor for the name of the properties passed through as an arrayref
 
