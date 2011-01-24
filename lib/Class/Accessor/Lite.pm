@@ -2,7 +2,7 @@ package Class::Accessor::Lite;
 
 use strict;
 
-our $VERSION = '0.05';
+our $VERSION = '0.04';
 
 use Carp ();
 
