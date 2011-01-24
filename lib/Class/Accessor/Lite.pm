@@ -172,11 +172,11 @@ creates a read / write accessor for the name of the properties passed through as
 
 =item ro => \@name_of_the_properties
 
-creates a write-only accessor for the name of the properties passed through as an arrayref
-
-=item rw => \@name_of_the_properties
-
 creates a read-only accessor for the name of the properties passed through as an arrayref
+
+=item wo => \@name_of_the_properties
+
+creates a write-only accessor for the name of the properties passed through as an arrayref
 
 =back
 
