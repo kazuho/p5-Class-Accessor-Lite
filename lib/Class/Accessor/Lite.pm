@@ -301,7 +301,7 @@ DEPRECATED.  Use the new "use Class::Accessor::Lite (...)" style.
 
 =head2 Can I use C<Class::Accessor::Lite> in an inherited module?
 
-Yes in most cases, when the class object in the super class is implemeted using a hashref.  However you _should_ _not_ create the constructor for the inherited class by calling C<Class::Accessor::Lite->new()> or by C<use Class::Accessor::Lite (new => 1).  The only other thing that C<Class::Accessor::Lite> does is to set up the accessor functions for given property names through a blessed hashref.
+Yes in most cases, when the class object in the super class is implemeted using a hashref.  However you _should_ _not_ create the constructor for the inherited class by calling C<< Class::Accessor::Lite->new() >> or by C<use Class::Accessor::Lite (new => 1).  The only other thing that C<Class::Accessor::Lite> does is to set up the accessor functions for given property names through a blessed hashref.
 
 =head2 What happens when passing more than one arguments to the accessor?
 
