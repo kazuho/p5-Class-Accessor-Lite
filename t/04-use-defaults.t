@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-package Base;
+package BaseClass;
 
 use Class::Accessor::Lite (
     new => 1,
@@ -35,13 +35,13 @@ use Class::Accessor::Lite (
         hidek => sub { 40 },
     },
 );
-use base qw(Base Mixin);
+use base qw(BaseClass Mixin);
 
 use Test::More tests => 36;
 
 for (1..2) { # Base::new is replaced at the first invocation
-    my $obj = Base->new();
-    is ref($obj), 'Base';
+    my $obj = BaseClass->new();
+    is ref($obj), 'BaseClass';
     is $obj->foo, 1;
     $obj->foo(0);
     is $obj->foo, 0;
