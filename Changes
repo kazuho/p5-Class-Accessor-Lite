@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Accessor::Lite.
 
+0.06
+	- fix documentation issues (thanks to magnolia-k)
+
 0.05
 	- improve usage error checking: assert that the accessor lists passed through the "import" function are arrayrefs
 
