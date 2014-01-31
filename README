@@ -30,11 +30,11 @@ THE USE STATEMENT
         passed through as an arrayref
 
     ro => \@name_of_the_properties
-        creates a write-only accessor for the name of the properties passed
+        creates a read-only accessor for the name of the properties passed
         through as an arrayref
 
-    rw => \@name_of_the_properties
-        creates a read-only accessor for the name of the properties passed
+    wo => \@name_of_the_properties
+        creates a write-only accessor for the name of the properties passed
         through as an arrayref
 
     For more detailed explanation read the following section describing the
@@ -70,11 +70,11 @@ FUNCTIONS
 FAQ
   Can I use "Class::Accessor::Lite" in an inherited module?
     Yes in most cases, when the class object in the super class is
-    implemeted using a hashref. However you _should_ _not_ create the
+    implemented using a hashref. However you _should_ _not_ create the
     constructor for the inherited class by calling
-    "Class::Accessor::Lite-"new()> or by "use Class::Accessor::Lite (new ="
-    1). The only other thing that "Class::Accessor::Lite" does is to set up
-    the accessor functions for given property names through a blessed
+    "<Class::Accessor::Lite-"new()>> or by "<use Class::Accessor::Lite (new
+    =" 1)>>. The only other thing that "Class::Accessor::Lite" does is to
+    set up the accessor functions for given property names through a blessed
     hashref.
 
   What happens when passing more than one arguments to the accessor?
