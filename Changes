@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::Accessor::Lite.
 
+0.07
+	- lazy Carp loading (thanks to qsimpleq)
+
 0.06
 	- fix documentation issues (thanks to magnolia-k)
 
