@@ -4,7 +4,7 @@ use strict;
 
 our $VERSION = '0.06';
 
-use Carp ();
+sub croak {require Carp; Carp::croak(@_)}
 
 sub import {
     shift;
@@ -17,7 +17,7 @@ sub import {
     );
     for my $key (sort keys %key_ctor) {
         if (defined $args{$key}) {
-            Carp::croak "value of the '$key' parameter should be an arrayref"
+            croak("value of the '$key' parameter should be an arrayref")
                 unless ref($args{$key}) eq 'ARRAY';
             $key_ctor{$key}->($pkg, @{$args{$key}});
         }
@@ -114,7 +114,7 @@ sub __m_ro {
             return $_[0]->{$n} if @_ == 1;
         } else {
             my $caller = caller(0);
-            Carp::croak("'$caller' cannot access the value of '$n' on objects of class '$pkg'");
+            croak("'$caller' cannot access the value of '$n' on objects of class '$pkg'");
         }
     };
 }
@@ -124,7 +124,7 @@ sub __m_wo {
     sub {
         if (@_ == 1) {
             my $caller = caller(0);
-            Carp::croak( "'$caller' cannot alter the value of '$n' on objects of class '$pkg'")
+            croak("'$caller' cannot alter the value of '$n' on objects of class '$pkg'")
         } else {
             return $_[0]->{$n} = $_[1] if @_ == 2;
             shift->{$n} = \@_;
