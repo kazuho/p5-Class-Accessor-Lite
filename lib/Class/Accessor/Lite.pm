@@ -4,7 +4,7 @@ use strict;
 
 our $VERSION = '0.07';
 
-sub croak {require Carp; Carp::croak(@_)}
+sub croak {require Carp; goto &Carp::croak}
 
 sub import {
     shift;
