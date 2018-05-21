@@ -2,7 +2,7 @@ NAME
     Class::Accessor::Lite - a minimalistic variant of Class::Accessor
 
 SYNOPSIS
-        package MyPackage;
+        package Example;
 
         use Class::Accessor::Lite (
             new => 1,
@@ -10,6 +10,11 @@ SYNOPSIS
             ro  => [ qw(baz) ],
             wo  => [ qw(hoge) ],
         );
+
+        my $example = Example->new(foo => 2, bar => 4);
+        
+        my $foo = $example->foo;      # get $example->{foo}, $foo = 2
+        $example->bar(7);             # set $example->{bar} = 7
 
 DESCRIPTION
     The module is a variant of "Class::Accessor". It is fast and requires
@@ -108,4 +113,3 @@ LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself, either Perl version 5.8.6 or, at
     your option, any later version of Perl 5 you may have available.
-
