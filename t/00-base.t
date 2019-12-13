@@ -23,12 +23,12 @@ is($k->bar, 2);
 is($k->ro, 3);
 eval { $k->ro(99) };
 my $e = $@;
-like $e, qr{'K' cannot access the value of 'ro' on objects of class 'K' at t/00-base.t line };
+like $e, qr{'K' cannot access the value of 'ro' on objects of class 'K' at t[/\\]00-base.t line };
 $k->wo(801);
 is $k->{wo}, '801';
 is_deeply($k->wo(2, 3), [ 2, 3 ]);
 eval { $k->wo() };
 $e = $@;
 ok $e;
-like $e, qr{'K' cannot alter the value of 'wo' on objects of class 'K' at t/00-base.t line };
+like $e, qr{'K' cannot alter the value of 'wo' on objects of class 'K' at t[/\\]00-base.t line };
 
